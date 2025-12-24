@@ -3,11 +3,12 @@ import DefaultLayout from "../DefaultLayout/Layout";
 ;
 import React, { Suspense, lazy } from "react";
 import Loader from "../Component/Common/Loader";
-import WatchHistory from "../Pages/WatchHistory";
 
 const Login = lazy(() => import("../Access/Login"))
 const Home = lazy(() => import("../Pages/Home"))
 const Preview = lazy(() => import("../Pages/Preview"))
+const Subscription = lazy(() => import("../Pages/Subscription"))
+const WatchHistory = lazy(() => import("../Pages/WatchHistory"))
 
 
 const WithLayout = ({ component }) => {
@@ -25,6 +26,7 @@ const Router = () => {
                     <Route path="/home" element={<WithLayout component={<Home />} />} />
                     <Route path="/preview/:id" element={<WithLayout component={<Preview />} />} />
                     <Route path="/watch-history" element={<WithLayout component={<WatchHistory />} />} />
+                    <Route path="/subscription" element={<WithLayout component={<Subscription />} />} />
                 </Routes>
             </Suspense>
         </BrowserRouter>

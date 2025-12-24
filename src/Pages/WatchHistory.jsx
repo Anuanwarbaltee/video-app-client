@@ -1,129 +1,147 @@
-import React, { useEffect, useState } from 'react'
-import { UserService } from '../Services/UserSercive'
-import UseLocalStorage from '../Component/Hooks/UseLocalStorage'
-import Header from '../Component/Common/Header'
-import { Box, Grid, Typography, styled } from '@mui/material'
-import { Helpers } from "../Shell/Helpers"
-import { useNavigate } from 'react-router-dom'
-const Root = styled("Grid")(({ theme }) => ({
-    width: "100%",
-    marginBottom: "15px",
-    '& .main-container': {
-        display: "flex",
-        justifyContent: "start",
-        alignItem: "center",
-        flexDirection: "row",
-        gap: "10px",
-        spacing: "15px",
-        flexWrap: "wrap",
-        '& .iframe-sec': {
-            height: "160px !important",
-            width: "100%",
-            // backgroundColor: "red",
-            borderRadius: "10px"
-        },
-        '& .detail-sec': {
-            display: "flex",
-            justifyContent: "start",
-            alignItem: "start",
-            '& .content': {
-                display: "flex",
-                alignItem: "center",
-                gap: "5px",
-                flexDirection: "column"
-            }
+import { useCallback, useEffect, useState } from "react";
+import { Box, Grid, Typography, styled } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-        }
-    }
-}))
+import UseLocalStorage from "../Component/Hooks/UseLocalStorage";
+import { UserService } from "../Services/UserSercive";
+import Loader from "../Component/Common/Loader";
+
+const Root = styled(Grid)(({ theme }) => ({
+    width: "100%",
+    marginBottom: 15,
+
+    ".history-card": {
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 16,
+        paddingBottom: 16,
+        borderBottom: `1px solid ${theme.palette.divider}`,
+    },
+
+    ".thumbnail": {
+        width: "100%",
+        aspectRatio: "16/9",
+        borderRadius: 10,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        cursor: "pointer",
+    },
+
+    ".details": {
+        display: "flex",
+        flexDirection: "column",
+        gap: 6,
+    },
+
+    ".clamp": {
+        display: "-webkit-box",
+        WebkitBoxOrient: "vertical",
+        overflow: "hidden",
+        WebkitLineClamp: 3,
+    },
+
+    ".empty-state": {
+        textAlign: "center",
+        padding: theme.spacing(6),
+        color: theme.palette.text.secondary,
+    },
+}));
 
 const WatchHistory = () => {
-    const [user, setUser] = UseLocalStorage('User', '')
-    const [history, setHistory] = useState([])
+    const [user] = UseLocalStorage("User", "");
+    const [history, setHistory] = useState([]);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    useEffect(() => {
-        getWatchHistory();
-    }, [])
 
-    const getWatchHistory = async () => {
+    const fetchWatchHistory = useCallback(async () => {
+        setLoading(true)
         try {
-            let res = await UserService.geHistory(user?._id);
-            if (res.success) {
-                setHistory(res.data)
-                console.log(history)
+            const res = await UserService.geHistory(user?._id);
+            if (res?.success) {
+                setHistory(res.data || []);
             }
         } catch (error) {
-
+            console.error("Failed to load watch history", error);
+        } finally {
+            setLoading(false)
         }
-    }
+    }, [user?._id]);
 
-    const gotoPriewPage = (item) => {
-        navigate(`/preview/${item._id}`, {
-            state: { id: item?._id, url: item?.uservideoFile, userId: item?.owner?._id }
-        })
-    }
+    useEffect(() => {
+        fetchWatchHistory();
+    }, [fetchWatchHistory]);
+
+    const goToPreview = useCallback(
+        (item) => {
+            if (!item?._id) return;
+
+            navigate(`/preview/${item._id}`, {
+                state: {
+                    id: item._id,
+                    url: item.uservideoFile,
+                    userId: item?.owner?._id,
+                },
+            });
+        },
+        [navigate]
+    );
+
     return (
-        <Root>
-            <Header />
-            <Box sx={{ mt: { xs: "130px", md: "65px", xl: "65px" } }}>
-                <Grid container spacing={2} justifyContent={"space-between"} >
-                    {history?.length > 0 && history?.map((item, index) => {
-                        return (
-                            <Grid key={item.id || index} item md={12} xs={12} className="main-container">
-                                <Grid item md={4} sm={8}>
-                                    <Box className="iframe-sec" onClick={() => (gotoPriewPage(item))}
-                                        sx={{
-                                            backgroundImage: `url(${item.thumbnail})`,
-                                            backgroundPosition: "center",
-                                            backgroundSize: "cover",
-                                            backgroundRepeat: "no-repeat",
-                                            width: "100%",
-                                            aspectRatio: "16/9", // Maintains consistent height across screen sizes
-                                            borderRadius: "10px",
-                                        }}
-                                    >
-                                    </Box>
-                                </Grid>
-                                <Grid item md={5} sm={5}>
-                                    <Box className="detail-sec">
-
-                                        <Box className="content">
-                                            <Box className="description">
-                                                <Typography sx={{
-                                                    display: "-webkit-box",
-                                                    WebkitBoxOrient: "vertical",
-                                                    overflow: "hidden",
-                                                    WebkitLineClamp: 3
-                                                }}
-                                                    title={item?.title}
-                                                >{item.title || 'No title available'}</Typography>
-                                            </Box>
-                                            <Box className="info">
-                                                <Box>
-                                                    <span>{item.owner?.userName || 'Anonymous'}</span>
-                                                    <span> {item.views} View </span>
-                                                    <Typography sx={{
-                                                        display: "-webkit-box",
-                                                        WebkitBoxOrient: "vertical",
-                                                        overflow: "hidden",
-                                                        WebkitLineClamp: 3
-                                                    }}
-                                                        title={item?.description}
-                                                    >{item.description || 'No description available'}</Typography>
-                                                </Box>
-                                            </Box>
-                                        </Box>
-                                    </Box>
-                                </Grid>
-                            </Grid>
-                        );
-                    })}
-
+        <Root container spacing={2} mt={3}>
+            {!loading && history.length === 0 ? (
+                <Grid item xs={12}>
+                    <Box className="empty-state">
+                        <Typography variant="h6">No watch history found</Typography>
+                        <Typography variant="body2">
+                            Videos you watch will appear here.
+                        </Typography>
+                    </Box>
                 </Grid>
-            </Box>
+            ) : !loading ?
+                (
+                    history.map((item, index) => (
+                        <Grid item xs={12} key={item?._id || index}>
+                            <Box className="history-card">
+                                {/* Thumbnail */}
+                                <Grid item xs={12} md={4}>
+                                    <Box
+                                        className="thumbnail"
+                                        sx={{ backgroundImage: `url(${item?.thumbnail})` }}
+                                        onClick={() => goToPreview(item)}
+                                    />
+                                </Grid>
+
+                                {/* Details */}
+                                <Grid item xs={12} md={7}>
+                                    <Box className="details">
+                                        <Typography className="clamp" title={item?.title}>
+                                            {item?.title || "No title available"}
+                                        </Typography>
+
+                                        <Typography variant="body2" color="text.secondary">
+                                            {item?.owner?.userName || "Anonymous"} ·{" "}
+                                            {item?.views || 0} Views
+                                        </Typography>
+
+                                        <Typography
+                                            variant="body2"
+                                            className="clamp"
+                                            title={item?.description}
+                                        >
+                                            {item?.description || "No description available"}
+                                        </Typography>
+                                    </Box>
+                                </Grid>
+                            </Box>
+                        </Grid>
+                    ))
+                )
+                :
+                <Loader size={50} message={"Loading..."} />
+            }
         </Root>
+    );
+};
 
-    )
-}
-
-export default WatchHistory
+export default WatchHistory;

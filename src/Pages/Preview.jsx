@@ -109,7 +109,9 @@ const Preview = () => {
     const [commentIds, setCommentIds] = useState([]);
     const [updateComment, setUpdateComment] = useState("");
     const [isSubmitComment, setIsSubmitComment] = useState(false);
+    const [search, setSearch] = useState('')
     const { state } = useLocation();
+
 
 
     useEffect(() => {
@@ -362,11 +364,15 @@ const Preview = () => {
         }
     }
 
+    const handleSearch = (value) => {
+        setSearch(value)
+    }
+
     return (
         <Root>
             <>
 
-                <Header />
+                <Header handleSearch={handleSearch} />
                 <Grid container className="main-container">
                     <Grid item md={7} xs={12} className='leftSec'>
                         <ReactPlayers url={state.url} videoId={state?.id} />
@@ -489,7 +495,7 @@ const Preview = () => {
                         </Box>
                     </Grid>
                     <Grid item md={5} paddingLeft={"5px"}>
-                        <PreviewLeftSec />
+                        <PreviewLeftSec searchValue={search} />
                     </Grid>
                 </Grid>
             </>

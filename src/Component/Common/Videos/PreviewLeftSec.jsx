@@ -4,6 +4,9 @@ import Loader from "../Loader";
 import { Videoservice } from "../../../Services/Videoservice";
 import { Helpers } from "../../../Shell/Helpers";
 import { useNavigate } from "react-router-dom";
+import useDebounce from "../../Hooks/Usedebounce";
+import { addFilter } from "../../../redux/searchSlice";
+import { useDispatch } from "react-redux";
 
 const Root = styled("Grid")(({ theme }) => ({
     width: "100%",
@@ -38,17 +41,19 @@ const Root = styled("Grid")(({ theme }) => ({
 }))
 
 
-const PreviewLeftSec = () => {
+const PreviewLeftSec = ({ searchValue }) => {
     const [listData, setListData] = useState([])
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const page = useRef(1);
     const limits = useRef(10)
     const sortBy = useRef("title")
+    const debounceValue = useDebounce(searchValue, 500)
+    const dispatch = useDispatch()
 
     useEffect(() => {
         getVideoList();
-    }, [])
+    }, [debounceValue])
 
     const getVideoList = async () => {
 
@@ -58,12 +63,13 @@ const PreviewLeftSec = () => {
             sortBy: sortBy.current,
             limit: limits.current,
             page: page.current,
-            search: ""
+            search: debounceValue || ""
         }
         try {
             let res = await Videoservice.getVideoList(data);
             if (res.success) {
                 setListData(res.data)
+                dispatch(addFilter({ search: debounceValue }))
             } else {
                 setListData([])
             }

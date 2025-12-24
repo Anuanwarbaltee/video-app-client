@@ -9,6 +9,7 @@ import {
     ListItemIcon,
     ListItemText,
     IconButton,
+    Tooltip,
 } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import {
@@ -83,7 +84,9 @@ const MenuList = ({ items, open, activeRoute, onNavigate }) => {
                                     activeRoute === url ? theme.palette.action.selected : "inherit",
                                 "&:hover": {
                                     backgroundColor: theme.palette.action.hover,
+
                                 },
+
                             }}
                         >
                             <ListItemIcon
@@ -93,7 +96,9 @@ const MenuList = ({ items, open, activeRoute, onNavigate }) => {
                                     justifyContent: "center",
                                 }}
                             >
-                                <Icon />
+                                <Tooltip title={open ? "" : label}>
+                                    <Icon />
+                                </Tooltip>
                             </ListItemIcon>
 
                             {open && <ListItemText primary={label} />}

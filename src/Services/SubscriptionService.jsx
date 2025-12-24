@@ -9,6 +9,10 @@ const SubscriptionService = {
         let response = await ExecutePost(`subscriptions/c/${id}`)
         return response;
     },
+    async getSubscribebChainels(id) {
+        let response = await ExecuteGet(`subscriptions/user/${id}`)
+        return response;
+    },
 }
 
 export default SubscriptionService
