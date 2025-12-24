@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import LightModeIcon from '@mui/icons-material/LightMode';
 import { ThemeContext } from '../../Shell/Theme';
 import { useContext } from 'react';
@@ -9,17 +9,25 @@ import { Box, Button, Grid, InputAdornment, TextField, Typography } from '@mui/m
 import IconButton from '@mui/material/IconButton';
 import UseLocalStorage from '../Hooks/UseLocalStorage';
 import VideoUploadModal from './Videos/VideoUploadPopUp';
+import { useSelector } from 'react-redux';
 
 const Header = ({ handleSearch }) => {
     const [userData, setUserdata] = UseLocalStorage("User", '')
     const { mode, toggleTheme } = useContext(ThemeContext);
-    const [openDialog, setOpenDialog] = React.useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
     const [search, setSearch] = useState('')
+    const searchValue = useSelector((state) => state.search.filters.search)
+
     const handleSeachValue = (event) => {
         handleSearch(event.target.value)
         setSearch(event.target.value)
     }
+
+    useEffect(() => {
+        setSearch(searchValue)
+    }, [searchValue])
     return (
+
         <>
             <Box sx={{ display: 'flex', flexWrap: "wrap", alignItems: "center", justifyContent: "normal", gap: 2, position: "fixed", padding: "10px 0", bgcolor: "background.default", minWidth: "100lvw", zIndex: 999 }}>
 

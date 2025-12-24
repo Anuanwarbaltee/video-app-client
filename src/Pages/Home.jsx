@@ -6,6 +6,8 @@ import { Helpers } from "../Shell/Helpers";
 import { useNavigate } from "react-router-dom";
 import Header from "../Component/Common/Header";
 import useDebounce from "../Component/Hooks/Usedebounce";
+import { useDispatch } from "react-redux";
+import { addFilter } from "../redux/searchSlice";
 
 const Root = styled("Grid")(({ theme }) => ({
     width: "100%",
@@ -52,6 +54,7 @@ const Home = () => {
     const debounceValue = useDebounce(search, 500)
     const isFirstLoad = useRef(true)
     const navigate = useNavigate();
+    const dispatch = useDispatch()
 
     const page = useRef(1);
     const limits = useRef(10)
@@ -76,8 +79,8 @@ const Home = () => {
 
         try {
             const res = await Videoservice.getVideoList(data);
-            // setSearch('')
             setListData(res.success ? res.data : []);
+            dispatch(addFilter({ search: debounceValue }))
         } catch {
             setListData([]);
         } finally {
@@ -101,7 +104,7 @@ const Home = () => {
                     <Header handleSearch={handleSearch} />
                     <Box sx={{ mt: { xs: "130px", md: "65px", xl: "65px" } }}>
                         <Grid container spacing={2} justifyContent={"space-between"} >
-                            {listData?.videos?.length > 0 && listData?.videos?.map((item, index) => {
+                            {listData?.videos?.length > 0 ? listData?.videos?.map((item, index) => {
                                 return (
                                     <Grid key={item.id || index} item md={6} xs={12} className="main-container">
                                         <Box className="iframe-sec" onClick={() => (gotoPriewPage(item))}
@@ -148,7 +151,11 @@ const Home = () => {
                                         </Box>
                                     </Grid>
                                 );
-                            })}
+                            }) :
+                                <Box sx={{ margin: "auto", height: "92vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                    <Typography sx={{ fontSize: "18px", fontWeight: "bold" }}>No Data Found</Typography>
+                                </Box>
+                            }
 
                         </Grid>
                     </Box>
