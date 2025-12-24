@@ -8,7 +8,7 @@ export const Videoservice = {
     },
 
     async getVideoList(data) {
-        let response = await ExecuteGet(`video/list?sortType=${data.sortType}&sortBy=${data.sortBy}&limit=${data.limit}&page=${data.page}`, data)
+        let response = await ExecuteGet(`video/list?sortType=${data.sortType}&sortBy=${data.sortBy}&limit=${data.limit}&page=${data.page}&search=${data.search}`, data)
         return response;
     },
     async getVideo(id) {

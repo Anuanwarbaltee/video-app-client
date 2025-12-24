@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Box, Typography, styled, Grid } from "@mui/material";
 import Loader from "../Component/Common/Loader";
 import { Videoservice } from "../Services/Videoservice";
 import { Helpers } from "../Shell/Helpers";
 import { useNavigate } from "react-router-dom";
 import Header from "../Component/Common/Header";
+import useDebounce from "../Component/Hooks/Usedebounce";
 
 const Root = styled("Grid")(({ theme }) => ({
     width: "100%",
@@ -47,36 +48,42 @@ const Root = styled("Grid")(({ theme }) => ({
 const Home = () => {
     const [listData, setListData] = useState([])
     const [loading, setLoading] = useState(false);
+    const [search, setSearch] = useState('')
+    const debounceValue = useDebounce(search, 500)
+    const isFirstLoad = useRef(true)
     const navigate = useNavigate();
 
     const page = useRef(1);
     const limits = useRef(10)
     const sortBy = useRef("title")
+
     useEffect(() => {
+        // if (!isFirstLoad && debounceValue == '') return;
+        // isFirstLoad.current = false;
         getVideoList();
-    }, [])
+    }, [debounceValue]);
 
     const getVideoList = async () => {
-        setLoading(true)
-        let data = {
+        setLoading(true);
+
+        const data = {
             sortType: "desc",
             sortBy: sortBy.current,
             limit: limits.current,
             page: page.current,
-        }
-        try {
-            let res = await Videoservice.getVideoList(data);
-            if (res.success) {
-                setListData(res.data)
-            } else {
-                setListData([])
-            }
-        } catch (error) {
+            search: debounceValue || ""
+        };
 
+        try {
+            const res = await Videoservice.getVideoList(data);
+            // setSearch('')
+            setListData(res.success ? res.data : []);
+        } catch {
+            setListData([]);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
     const gotoPriewPage = (item) => {
         navigate(`/preview/${item._id}`, {
@@ -84,12 +91,15 @@ const Home = () => {
         })
     }
 
+    const handleSearch = (value) => {
+        setSearch(value)
+    }
     return (
         <Root>
             {!loading ?
                 <>
-                    <Header />
-                    <Box sx={{ marginTop: "65px", }}>
+                    <Header handleSearch={handleSearch} />
+                    <Box sx={{ mt: { xs: "130px", md: "65px", xl: "65px" } }}>
                         <Grid container spacing={2} justifyContent={"space-between"} >
                             {listData?.videos?.length > 0 && listData?.videos?.map((item, index) => {
                                 return (

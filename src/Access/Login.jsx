@@ -3,7 +3,7 @@ import { Box, Button, colors, TextField, Typography, useTheme } from '@mui/mater
 import Grid from '@mui/material/Grid2';
 import React, { useContext, useEffect, useState } from 'react'
 import { UserService } from '../Services/UserSercive';
-import UseLocalStorage from '../Component/Common/UseLocalStorage';
+import UseLocalStorage from '../Component/Hooks/UseLocalStorage';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../Component/Common/Loader';
 import { ThemeContext } from '../Shell/Theme';

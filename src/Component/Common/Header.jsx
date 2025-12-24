@@ -1,30 +1,38 @@
-import React from 'react'
+import React, { useState } from 'react'
 import LightModeIcon from '@mui/icons-material/LightMode';
 import { ThemeContext } from '../../Shell/Theme';
 import { useContext } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
-import Brightness2Icon from '@mui/icons-material/Brightness2';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { Box, Button, Grid, InputAdornment, TextField, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import UseLocalStorage from '../Common/UseLocalStorage';
+import UseLocalStorage from '../Hooks/UseLocalStorage';
 import VideoUploadModal from './Videos/VideoUploadPopUp';
 
-const Header = () => {
+const Header = ({ handleSearch }) => {
     const [userData, setUserdata] = UseLocalStorage("User", '')
     const { mode, toggleTheme } = useContext(ThemeContext);
     const [openDialog, setOpenDialog] = React.useState(false);
+    const [search, setSearch] = useState('')
+    const handleSeachValue = (event) => {
+        handleSearch(event.target.value)
+        setSearch(event.target.value)
+    }
     return (
         <>
-            <Box sx={{ display: 'flex', alignItems: "center", justifyContent: "normal", gap: 2, position: "fixed", padding: "10px 0", bgcolor: "background.default", minWidth: "100vw", zIndex: 999 }}>
+            <Box sx={{ display: 'flex', flexWrap: "wrap", alignItems: "center", justifyContent: "normal", gap: 2, position: "fixed", padding: "10px 0", bgcolor: "background.default", minWidth: "100lvw", zIndex: 999 }}>
 
                 <Box>
                     <TextField
                         type="text"
                         placeholder="Search"
                         fullWidth
+                        value={search}
+                        onChange={handleSeachValue}
                         sx={{
-                            minWidth: "500px",
+                            minWidth: { xs: "80lvw", md: "500px", sm: "500px" },
+
                             "& .MuiInputBase-input": {
                                 padding: "10px 14px",
                             },
@@ -68,7 +76,7 @@ const Header = () => {
                 </Box>
 
                 <Box>
-                    {mode === "dark" ? <IconButton ><LightModeIcon onClick={toggleTheme} /></IconButton> : <IconButton><Brightness2Icon onClick={toggleTheme} style={{ color: "#2c43c5" }} /></IconButton>}
+                    {mode === "dark" ? <IconButton><DarkModeIcon onClick={toggleTheme} /></IconButton> : <IconButton ><LightModeIcon onClick={toggleTheme} /></IconButton>}
                 </Box>
 
                 <Box sx={{}}>
@@ -76,8 +84,7 @@ const Header = () => {
                         height: "40px",
                         width: "40px",
                         borderRadius: "50%",
-                        backgroundColor: "red",
-                        backgroundImage: `url(${userData.avatar})`, backgroundPosition: "center", backgroundSize: "cover", objectFit: "cover",
+                        backgroundImage: `url(${userData.avatar || "https://via.placeholder.com/40"})`, backgroundPosition: "center", backgroundSize: "cover", objectFit: "cover",
                     }}>
 
                     </Box>

@@ -108,7 +108,7 @@ const MenuList = ({ items, open, activeRoute, onNavigate }) => {
 /* ---------------- main layout ---------------- */
 
 export default function DefaultLayout({ children }) {
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
     const [route, setRoute] = useState("/");
     const navigate = useNavigate();
     const drawerWidth = open ? DRAWER_OPEN_WIDTH : DRAWER_CLOSE_WIDTH;
@@ -130,7 +130,7 @@ export default function DefaultLayout({ children }) {
                     width: drawerWidth,
                     flexShrink: 0,
                     "& .MuiDrawer-paper": {
-                        width: drawerWidth,
+                        width: { xs: open ? "95lvw" : drawerWidth, md: drawerWidth, sm: drawerWidth, xl: drawerWidth },
                         boxSizing: "border-box",
                         overflowX: "hidden",
                         backgroundColor: "background.default",

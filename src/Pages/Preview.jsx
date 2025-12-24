@@ -7,7 +7,6 @@ import ReactPlayers from '../Component/Common/ReactPlayer';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import SentimentSatisfiedIcon from "@mui/icons-material/SentimentSatisfied";
 import SubscriptionService from '../Services/SubscriptionService';
-import UseLocalStorage from '../Component/Common/UseLocalStorage';
 import LikeService from '../Services/LikeService';
 import CommentService from '../Services/CommentService';
 import PreviewLeftSec from '../Component/Common/Videos/PreviewLeftSec';
@@ -30,7 +29,6 @@ const Root = styled("Grid")(({ theme }) => ({
         '& .iframe-sec': {
             height: "300px",
             width: "100%",
-            backgroundColor: "red",
             borderRadius: "10px"
         },
         '& .detail-sec': {
@@ -44,12 +42,12 @@ const Root = styled("Grid")(({ theme }) => ({
                 height: "60px",
                 width: "60px",
                 borderRadius: "50%",
-                backgroundColor: "red"
             },
             '& .content': {
                 display: "flex",
                 alignItem: "center",
                 gap: "50px",
+                flexWrap: "wrap"
             },
             '& .chips': {
                 display: "flex",
@@ -379,7 +377,7 @@ const Preview = () => {
                                 <Typography variant='body1' sx={{ fontWeight: "bold" }}>{videoData?.[0]?.description || 'No description available'}</Typography>
                             </Box>
                             <Box className="content">
-                                <Box className="avatar" sx={{ backgroundImage: `url(${videoData?.[0]?.ownerDetails?.avatar})`, backgroundPosition: "center", backgroundSize: "cover", height: "100%" }}>
+                                <Box className="avatar" sx={{ backgroundImage: `url(${videoData?.[0]?.ownerDetails?.avatar || "https://via.placeholder.com/40"})`, backgroundPosition: "center", backgroundSize: "cover", height: "100%" }}>
                                 </Box>
                                 <Box className="info">
                                     <Typography variant='body1'>{videoData?.[0]?.ownerDetails?.userName || 'Anonymous'}</Typography>

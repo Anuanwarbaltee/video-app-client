@@ -15,6 +15,7 @@ const Root = styled("Grid")(({ theme }) => ({
         flexDirection: "row",
         gap: "10px",
         spacing: "10px",
+        flexWrap: "wrap",
         '& .iframe-sec': {
             height: "160px !important",
             width: "100%",
@@ -50,12 +51,14 @@ const PreviewLeftSec = () => {
     }, [])
 
     const getVideoList = async () => {
+
         setLoading(true)
         let data = {
             sortType: "desc",
             sortBy: sortBy.current,
             limit: limits.current,
             page: page.current,
+            search: ""
         }
         try {
             let res = await Videoservice.getVideoList(data);
@@ -85,7 +88,7 @@ const PreviewLeftSec = () => {
                         {listData?.videos?.length > 0 && listData?.videos?.map((item, index) => {
                             return (
                                 <Grid key={item.id || index} item md={12} xs={12} className="main-container">
-                                    <Grid item md={8} sm={8}>
+                                    <Grid item md={7} sm={7}>
                                         <Box className="iframe-sec" onClick={() => (gotoPriewPage(item))}
                                             sx={{
                                                 backgroundImage: `url(${item.thumbnail})`,

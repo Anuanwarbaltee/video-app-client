@@ -18,7 +18,7 @@ const ModalContent = styled(Box)(({ theme }) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 600,
+
     backgroundColor: theme.palette.background.paper,
     borderRadius: "8px",
     boxShadow: 24,
@@ -101,7 +101,7 @@ const VideoUploadModal = ({ open, onClose }) => {
                     backdropFilter: 'blur(2px)',
                 }}
             >
-                <ModalContent className="modalStyle" sx={{}}>
+                <ModalContent className="modalStyle" sx={{ width: { sm: "500px", xs: "90lvw", md: "500px" } }}>
                     {/* Header */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Typography id="video-upload-modal" variant="h6" fontWeight="bold">

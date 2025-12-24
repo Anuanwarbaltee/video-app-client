@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ReactPlayer from "react-player";
 import { Videoservice } from "../../Services/Videoservice";
-import UseLocalStorage from "./UseLocalStorage";
+import UseLocalStorage from "../Hooks/UseLocalStorage";
 import { UserService } from "../../Services/UserSercive";
 
 const ReactPlayers = ({ url, width = "100%", height = "360px", controls = true, playing = true, videoId }) => {

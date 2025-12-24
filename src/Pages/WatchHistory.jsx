@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { UserService } from '../Services/UserSercive'
-import UseLocalStorage from '../Component/Common/UseLocalStorage'
+import UseLocalStorage from '../Component/Hooks/UseLocalStorage'
 import Header from '../Component/Common/Header'
 import { Box, Grid, Typography, styled } from '@mui/material'
 import { Helpers } from "../Shell/Helpers"
@@ -15,6 +15,7 @@ const Root = styled("Grid")(({ theme }) => ({
         flexDirection: "row",
         gap: "10px",
         spacing: "15px",
+        flexWrap: "wrap",
         '& .iframe-sec': {
             height: "160px !important",
             width: "100%",
@@ -64,7 +65,7 @@ const WatchHistory = () => {
     return (
         <Root>
             <Header />
-            <Box sx={{ marginTop: "65px", }}>
+            <Box sx={{ mt: { xs: "130px", md: "65px", xl: "65px" } }}>
                 <Grid container spacing={2} justifyContent={"space-between"} >
                     {history?.length > 0 && history?.map((item, index) => {
                         return (
