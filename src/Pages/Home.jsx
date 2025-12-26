@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Box, Typography, styled, Grid } from "@mui/material";
+import { Box, Typography, styled, Grid, Skeleton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
-import Loader from "../Component/Common/Loader";
 import Header from "../Component/Common/Header";
 import useDebounce from "../Component/Hooks/Usedebounce";
-
 import { Videoservice } from "../Services/Videoservice";
 import { Helpers } from "../Shell/Helpers";
 import { addFilter } from "../redux/searchSlice";
@@ -19,12 +17,6 @@ const Root = styled(Grid)(({ theme }) => ({
         flexDirection: "column",
         gap: 10,
         cursor: "pointer",
-        transition: "transform 0.2s ease, box-shadow 0.2s ease",
-        // "&:hover": {
-        //     transform: "translateY(-4px)",
-        //     boxShadow: theme.shadows[2],
-        //     borderRadius: "10px"
-        // },
     },
 
     ".thumbnail": {
@@ -76,7 +68,9 @@ const Root = styled(Grid)(({ theme }) => ({
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
+        textAlign: "center",
         gap: 8,
+        width: "80vw"
     },
 }));
 
@@ -84,7 +78,6 @@ const Home = () => {
     const [listData, setListData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState("");
-
     const debouncedSearch = useDebounce(search, 500);
 
     const navigate = useNavigate();
@@ -93,32 +86,88 @@ const Home = () => {
     const page = useRef(1);
     const limit = useRef(10);
     const sortBy = useRef("title");
+    const isFetching = useRef(false);
+    const hasMore = useRef(true);
 
-    const fetchVideos = useCallback(async () => {
-        setLoading(true);
+    const fetchVideos = useCallback(
+        async (reset = false) => {
+            if (isFetching.current) return;
+            if (!hasMore.current && !reset) return;
 
-        const payload = {
-            sortType: "desc",
-            sortBy: sortBy.current,
-            limit: limit.current,
-            page: page.current,
-            search: debouncedSearch || "",
-        };
+            if (reset) {
+                page.current = 1;
+                hasMore.current = true;
+            }
 
-        try {
-            const res = await Videoservice.getVideoList(payload);
-            setListData(res?.success ? res.data : []);
-            dispatch(addFilter({ search: debouncedSearch }));
-        } catch (error) {
-            setListData([]);
-        } finally {
-            setLoading(false);
-        }
-    }, [debouncedSearch, dispatch]);
+            isFetching.current = true;
+            setLoading(true);
+
+            try {
+                const payload = {
+                    sortType: "desc",
+                    sortBy: sortBy.current,
+                    limit: limit.current,
+                    page: page.current,
+                    search: debouncedSearch || "",
+                };
+                const res = await Videoservice.getVideoList(payload);
+
+                if (res?.success) {
+                    const newVideos = res.data?.videos || [];
+
+                    setListData((prev) => (reset ? newVideos : [...prev, ...newVideos]));
+
+                    if (newVideos.length < limit.current) {
+                        hasMore.current = false;
+                    } else {
+                        page.current += 1;
+                    }
+                } else {
+                    setListData(reset ? [] : listData);
+                }
+
+                dispatch(addFilter({ search: debouncedSearch }));
+            } catch (error) {
+                console.error("Fetch error:", error);
+                setListData(reset ? [] : listData);
+            } finally {
+                setLoading(false);
+                isFetching.current = false;
+            }
+        },
+        [debouncedSearch, dispatch]
+    );
 
     useEffect(() => {
         fetchVideos();
-    }, [fetchVideos]);
+    }, []);
+
+    useEffect(() => {
+        if (debouncedSearch !== undefined) {
+            fetchVideos(true);
+        }
+    }, [debouncedSearch]);
+
+    // IntersectionObserver 
+    const observer = useRef();
+    const sentinelRef = useCallback(
+        (node) => {
+            if (loading || !node) return;
+            if (observer.current) observer.current.disconnect();
+
+            observer.current = new IntersectionObserver(
+                (entries) => {
+                    if (entries[0].isIntersecting && hasMore.current && !isFetching.current) {
+                        fetchVideos();
+                    }
+                },
+                { threshold: 0.1, rootMargin: "100px" }
+            );
+
+            observer.current.observe(node);
+        },
+        [loading, fetchVideos]
+    );
 
     const goToPreview = useCallback(
         (item) => {
@@ -133,70 +182,71 @@ const Home = () => {
         [navigate]
     );
 
+    const skeletonArray = Array.from({ length: 6 });
+
     return (
         <Root container>
-            {loading ? (
-                <Loader size={50} message="Loading videos..." />
-            ) : (
-                <>
-                    <Header handleSearch={setSearch} />
+            <Header handleSearch={setSearch} />
 
-                    <Box mt={{ xs: "130px", md: "70px" }}>
-                        <Grid container spacing={3}>
-                            {listData?.videos?.length > 0 ? (
-                                listData.videos.map((item) => (
-                                    <Grid item xs={12} sm={6} md={4} key={item._id}>
+            <Box mt={{ xs: "130px", md: "70px" }}>
+                <Grid container spacing={3}>
+                    {listData.length === 0 && !loading ? (
+                        <Grid item xs={12}>
+                            <Box className="empty-state" >
+                                <Typography variant="h6" sx={{ textAlign: "center" }}>No Data Found</Typography>
+                            </Box>
+                        </Grid>
+                    ) : (
+                        <>
+                            {listData.map((item) => (
+                                <Grid item xs={12} sm={6} md={4} key={item._id}>
+                                    <Box className="video-card" onClick={() => goToPreview(item)}>
                                         <Box
-                                            className="video-card"
-                                            onClick={() => goToPreview(item)}
-                                        >
-                                            {/* Thumbnail */}
+                                            className="thumbnail"
+                                            sx={{ backgroundImage: `url(${item.thumbnail})` }}
+                                        />
+                                        <Box className="card-footer">
                                             <Box
-                                                className="thumbnail"
-                                                sx={{ backgroundImage: `url(${item.thumbnail})` }}
+                                                className="avatar"
+                                                sx={{ backgroundImage: `url(${item.ownerDetails?.avatar})` }}
                                             />
+                                            <Box className="content">
+                                                <Typography className="title">
+                                                    {item.description || "No description available"}
+                                                </Typography>
+                                                <Typography className="meta">
+                                                    {item.ownerDetails?.userName || "Anonymous"}
+                                                </Typography>
+                                                <Typography className="meta">
+                                                    {item.views} views · {Helpers.timeAgo(item.createdAt)}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                </Grid>
+                            ))}
 
-                                            {/* Footer */}
-                                            <Box className="card-footer">
-                                                <Box
-                                                    className="avatar"
-                                                    sx={{
-                                                        backgroundImage: `url(${item.ownerDetails?.avatar})`,
-                                                    }}
-                                                />
-
-                                                <Box className="content">
-                                                    <Typography className="title">
-                                                        {item.description || "No description available"}
-                                                    </Typography>
-
-                                                    <Typography className="meta">
-                                                        {item.ownerDetails?.userName || "Anonymous"}
-                                                    </Typography>
-
-                                                    <Typography className="meta">
-                                                        {item.views} views ·{" "}
-                                                        {Helpers.timeAgo(item.createdAt)}
-                                                    </Typography>
+                            {loading &&
+                                skeletonArray.map((_, index) => (
+                                    <Grid item xs={12} sm={6} md={4} key={`skeleton-${index}`}>
+                                        <Box className="video-card">
+                                            <Skeleton variant="rectangular" height={180} sx={{ borderRadius: 2 }} />
+                                            <Box className="card-footer" sx={{ mt: 1 }}>
+                                                <Skeleton variant="circular" width={44} height={44} />
+                                                <Box sx={{ flex: 1, ml: 1 }}>
+                                                    <Skeleton variant="text" width="80%" />
+                                                    <Skeleton variant="text" width="60%" />
                                                 </Box>
                                             </Box>
                                         </Box>
                                     </Grid>
-                                ))
-                            ) : (
-                                <Grid item xs={12}>
-                                    <Box className="empty-state">
-                                        <Typography variant="h6">No Data Found</Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Try searching with a different keyword
-                                        </Typography>
-                                    </Box>
-                                </Grid>
-                            )}
-                        </Grid>
-                    </Box>
-                </>
-            )}
+                                ))}
+                        </>
+                    )}
+                </Grid>
+            </Box>
+
+            {hasMore.current && <Box ref={sentinelRef} height={20} width="100%" />}
         </Root>
     );
 };
