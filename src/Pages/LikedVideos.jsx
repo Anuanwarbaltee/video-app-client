@@ -60,6 +60,7 @@ const LikedVideos = () => {
             const res = await LikeService.getLikedVideos({
                 page: pageRef.current,
                 limit: limitRef.current,
+                id: user?._id
             });
 
             if (res.success) {

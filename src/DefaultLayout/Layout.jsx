@@ -58,7 +58,7 @@ const USER_MENU = [
     { label: "You", icon: ChevronRight },
     { label: "History", icon: History, url: "/watch-history" },
     { label: "Playlist", icon: PlaylistPlay },
-    { label: "Your Videos", icon: Slideshow, },
+    { label: "Your Videos", icon: Slideshow, url: `/video/${123}` },
     { label: "Liked Videos", icon: ThumbUp, url: "/liked-video" },
 ];
 

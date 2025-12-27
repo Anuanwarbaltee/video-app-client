@@ -13,6 +13,7 @@ import PreviewLeftSec from '../Component/Common/Videos/PreviewLeftSec';
 import Header from '../Component/Common/Header';
 import BasicMenu from '../Component/Common/Menu';
 import CircularProgress from '@mui/material/CircularProgress';
+import UseLocalStorage from '../Component/Hooks/UseLocalStorage';
 const Root = styled("Grid")(({ theme }) => ({
     width: "100%",
     // padding: "10px 0",
@@ -111,8 +112,7 @@ const Preview = () => {
     const [isSubmitComment, setIsSubmitComment] = useState(false);
     const [search, setSearch] = useState('')
     const { state } = useLocation();
-
-
+    const [user] = UseLocalStorage("User", "");
 
     useEffect(() => {
         if (state.id) {
@@ -219,8 +219,11 @@ const Preview = () => {
 
     const getVideo = async () => {
         try {
-
-            let res = await Videoservice.getVideo(state.id)
+            let data = {
+                id: state.id,
+                userId: user._id
+            }
+            let res = await Videoservice.getVideo(data)
             if (res.success) {
                 setVideoData(res.data)
             } else {
@@ -392,9 +395,15 @@ const Preview = () => {
                                         <Typography variant='body2'>{subscribercounts > 1 ? "subscribers" : "subscriber"}  </Typography>
                                     </Box>
                                 </Box>
-                                <Box className="chips" sx={{ backgroundColor: isSubscribe ? "#0f7ba4 !important" : "", }} onClick={() => toggleSubscription()}>
-                                    <Typography variant='body1' sx={{ color: isSubscribe ? "#fff" : "" }}>{isSubscribe ? "Subscribed" : "Subscribe"}</Typography>
-                                </Box>
+                                {videoData?.[0]?.isOwner ?
+                                    <Box className="chips" sx={{ backgroundColor: "#0f7ba4 !important" }} onClick={() => toggleSubscription()}>
+                                        <Typography variant='body1' sx={{ color: "#fff" }}>Edit video</Typography>
+                                    </Box>
+                                    :
+                                    <Box className="chips" sx={{ backgroundColor: isSubscribe ? "#0f7ba4 !important" : "", }} onClick={() => toggleSubscription()}>
+                                        <Typography variant='body1' sx={{ color: isSubscribe ? "#fff" : "" }}>{isSubscribe ? "Subscribed" : "Subscribe"}</Typography>
+                                    </Box>
+                                }
                                 <Box className="chips" onClick={() => toggleLikes("video", state.id)} sx={{ backgroundColor: isLiked ? "#0f7ba4 !important" : "" }}>
                                     <ThumbUpIcon sx={{ color: isLiked ? "#fff" : "" }} />
                                     <Typography variant='body2' sx={{ marginLeft: "10px" }}>{likeCounts}</Typography>

@@ -1,3 +1,4 @@
+import { data } from "react-router-dom";
 import { ExecuteGet, ExecutePost, ExecutePostForm } from "./ApiService"
 
 export const Videoservice = {
@@ -11,8 +12,15 @@ export const Videoservice = {
         let response = await ExecuteGet(`video/list?sortType=${data.sortType}&sortBy=${data.sortBy}&limit=${data.limit}&page=${data.page}&search=${data.search}`, data)
         return response;
     },
-    async getVideo(id) {
-        let response = await ExecuteGet(`video/${id}`)
+
+    async getVideo(data) {
+        let response = await ExecuteGet(`video/${data.id}?userId=${data.userId}`)
+        return response;
+    },
+
+
+    async getChanalVideos(data) {
+        let response = await ExecuteGet(`video?id=${data.id}&page=${data.page}&limit=${data.limit}&search=${data.search}`)
         return response;
     },
 

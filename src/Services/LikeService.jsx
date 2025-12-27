@@ -20,7 +20,7 @@ const LikeService = {
     },
 
     async getLikedVideos(data) {
-        let response = await ExecuteGet(`like/liked-videos/${data.id}?&limit=${data.limit}&page=${data.page}&skip=${data.skip}`, data)
+        let response = await ExecuteGet(`like/liked-videos/${data.id}?limit=${data.limit}&page=${data.page}`, data)
         return response;
     },
 }
