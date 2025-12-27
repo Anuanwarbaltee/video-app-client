@@ -9,6 +9,7 @@ const Home = lazy(() => import("../Pages/Home"))
 const Preview = lazy(() => import("../Pages/Preview"))
 const Subscription = lazy(() => import("../Pages/Subscription"))
 const WatchHistory = lazy(() => import("../Pages/WatchHistory"))
+const LikedVideos = lazy(() => import("../Pages/LikedVideos"))
 
 
 const WithLayout = ({ component }) => {
@@ -27,6 +28,7 @@ const Router = () => {
                     <Route path="/preview/:id" element={<WithLayout component={<Preview />} />} />
                     <Route path="/watch-history" element={<WithLayout component={<WatchHistory />} />} />
                     <Route path="/subscription" element={<WithLayout component={<Subscription />} />} />
+                    <Route path="/liked-video" element={<WithLayout component={<LikedVideos />} />} />
                 </Routes>
             </Suspense>
         </BrowserRouter>

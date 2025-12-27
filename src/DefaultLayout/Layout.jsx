@@ -58,8 +58,8 @@ const USER_MENU = [
     { label: "You", icon: ChevronRight },
     { label: "History", icon: History, url: "/watch-history" },
     { label: "Playlist", icon: PlaylistPlay },
-    { label: "Your Videos", icon: Slideshow },
-    { label: "Liked Videos", icon: ThumbUp },
+    { label: "Your Videos", icon: Slideshow, },
+    { label: "Liked Videos", icon: ThumbUp, url: "/liked-video" },
 ];
 
 /* ---------------- reusable menu list ---------------- */

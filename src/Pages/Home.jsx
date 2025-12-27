@@ -230,7 +230,7 @@ const Home = () => {
                                 skeletonArray.map((_, index) => (
                                     <Grid item xs={12} sm={6} md={4} key={`skeleton-${index}`}>
                                         <Box className="video-card">
-                                            <Skeleton variant="rectangular" height={180} sx={{ borderRadius: 2 }} />
+                                            <Skeleton variant="rectangular" height={180} width={300} sx={{ borderRadius: 2 }} />
                                             <Box className="card-footer" sx={{ mt: 1 }}>
                                                 <Skeleton variant="circular" width={44} height={44} />
                                                 <Box sx={{ flex: 1, ml: 1 }}>

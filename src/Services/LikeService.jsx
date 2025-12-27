@@ -18,6 +18,11 @@ const LikeService = {
         let response = await ExecutePost(`like/comment/toggle/${id}`)
         return response;
     },
+
+    async getLikedVideos(data) {
+        let response = await ExecuteGet(`like/liked-videos/${data.id}?&limit=${data.limit}&page=${data.page}&skip=${data.skip}`, data)
+        return response;
+    },
 }
 
 export default LikeService
