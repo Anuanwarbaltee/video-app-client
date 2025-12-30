@@ -1,5 +1,5 @@
 import { data } from "react-router-dom";
-import { ExecuteGet, ExecutePost, ExecutePostForm } from "./ApiService"
+import { ExecuteGet, ExecutePost, ExecutePostForm, ExecutePatch } from "./ApiService"
 
 export const Videoservice = {
 
@@ -27,6 +27,22 @@ export const Videoservice = {
     async incrementViews(id) {
         let response = await ExecutePost(`video/${id}/view`)
         return response;
+    },
+
+    async updateVideoFile(data) {
+        let response = await ExecutePatch(`video/update-videofile`, data, true)
+        return response;
+    },
+
+    async updateThumbnail(data) {
+        let response = await ExecutePatch(`video/update-thumbnail`, data, true)
+        return response;
+    },
+
+    async updateVideoMeta(data) {
+        let response = await ExecutePatch(`video/update-video`, data)
+        return response;
     }
 
 }
+

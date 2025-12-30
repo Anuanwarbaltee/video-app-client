@@ -24,6 +24,8 @@ import {
     ThumbUp,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { toggleDrawer } from "../redux/uiSlice";
 
 const DRAWER_OPEN_WIDTH = 240;
 const DRAWER_CLOSE_WIDTH = 60;
@@ -66,6 +68,7 @@ const USER_MENU = [
 
 const MenuList = ({ items, open, activeRoute, onNavigate }) => {
     const theme = useTheme();
+
 
     return (
         <List>
@@ -116,12 +119,18 @@ export default function DefaultLayout({ children }) {
     const [open, setOpen] = useState(false);
     const [route, setRoute] = useState("/");
     const navigate = useNavigate();
+    const dispatch = useDispatch()
     const drawerWidth = open ? DRAWER_OPEN_WIDTH : DRAWER_CLOSE_WIDTH;
 
     const handleNavigate = (url) => {
         setRoute(url);
         navigate(url);
     };
+
+    const handlleDrawer = () => {
+        dispatch(toggleDrawer(open))
+        setOpen(!open)
+    }
 
     return (
         <Box sx={{ display: "flex" }}>
@@ -148,7 +157,7 @@ export default function DefaultLayout({ children }) {
                 }}
             >
                 <DrawerHeader>
-                    <IconButton onClick={() => setOpen(!open)}>
+                    <IconButton onClick={handlleDrawer}>
                         {open ? <ChevronLeft /> : <MenuIcon />}
                     </IconButton>
                 </DrawerHeader>

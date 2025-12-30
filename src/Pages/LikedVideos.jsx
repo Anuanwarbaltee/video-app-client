@@ -7,7 +7,7 @@ import { Skeleton } from "@mui/material";
 
 const Root = styled(Grid)(({ theme }) => ({
     width: "100%",
-    margin: "16px 0",
+    margin: "8px 0",
 
     ".video-row": {
         display: "flex",
@@ -123,7 +123,7 @@ const LikedVideos = () => {
                 )}
 
                 {videos.map((item) => (
-                    <Box key={item._id} className="video-row">
+                    <Box key={item._id} className="video-row" mt={2}>
                         <Box
                             className="thumbnail"
                             sx={{ backgroundImage: `url(${item.thumbnail})` }}

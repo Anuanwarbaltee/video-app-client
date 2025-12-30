@@ -1,106 +1,165 @@
-import React, { useEffect, useState } from 'react'
-import LightModeIcon from '@mui/icons-material/LightMode';
-import { ThemeContext } from '../../Shell/Theme';
-import { useContext } from 'react';
-import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import { Box, Button, Grid, InputAdornment, TextField, Typography } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import UseLocalStorage from '../Hooks/UseLocalStorage';
-import VideoUploadModal from './Videos/VideoUploadPopUp';
-import { useSelector } from 'react-redux';
+import { useEffect, useState, useContext, useCallback } from "react";
+import {
+    AppBar,
+    Toolbar,
+    Box,
+    InputAdornment,
+    TextField,
+    IconButton,
+    Typography,
+    Button,
+    Tooltip,
+} from "@mui/material";
+
+import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+
+import { useSelector } from "react-redux";
+import { ThemeContext } from "../../Shell/Theme";
+import UseLocalStorage from "../Hooks/UseLocalStorage";
+import VideoUploadModal from "./Videos/VideoUploadPopUp";
 
 const Header = ({ handleSearch }) => {
-    const [userData, setUserdata] = UseLocalStorage("User", '')
     const { mode, toggleTheme } = useContext(ThemeContext);
+    const [userData] = UseLocalStorage("User", "");
     const [openDialog, setOpenDialog] = useState(false);
-    const [search, setSearch] = useState('')
-    const searchValue = useSelector((state) => state.search.filters.search)
+    const [search, setSearch] = useState("");
 
-    const handleSeachValue = (event) => {
-        handleSearch(event.target.value)
-        setSearch(event.target.value)
-    }
+    const searchValue = useSelector((state) => state.search.filters.search);
 
     useEffect(() => {
-        setSearch(searchValue)
-    }, [searchValue])
+        setSearch(searchValue || "");
+    }, [searchValue]);
+
+    const handleSearchChange = useCallback(
+        (e) => {
+            const value = e.target.value;
+            setSearch(value);
+            handleSearch(value);
+        },
+        [handleSearch]
+    );
+
     return (
-
         <>
-            <Box sx={{ display: 'flex', flexWrap: "wrap", alignItems: "center", justifyContent: "normal", gap: 2, position: "fixed", padding: "10px 0", bgcolor: "background.default", minWidth: "100lvw", zIndex: 999 }}>
-
-                <Box>
-                    <TextField
-                        type="text"
-                        placeholder="Search"
-                        fullWidth
-                        value={search}
-                        onChange={handleSeachValue}
-                        sx={{
-                            minWidth: { xs: "80lvw", md: "500px", sm: "500px" },
-
-                            "& .MuiInputBase-input": {
-                                padding: "10px 14px",
-                            },
-                        }}
-                        InputProps={{
-                            sx: { textAlign: "left" },
-                            endAdornment: (
-                                <InputAdornment
-                                    position="end"
-                                    sx={{
-                                        alignSelf: "flex-end",
-                                        margin: 0,
-                                        marginBottom: "4px",
-                                        // opacity: 0,
-                                        textAlign: "center"
-                                    }}
-                                >
-                                    <IconButton>
-                                        <SearchIcon />
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
-
-                </Box>
-                <Box sx={{
-                    display: "flex",
-                    justifyContent: "flex-start",
-                    alignItems: "center",
-                    width: "100px",
-                    height: "40px",
-                    border: "1px solid #ccc",
-                    borderRadius: "25px",
-                    padding: "10px"
+            <AppBar
+                position="fixed"
+                elevation={1}
+                sx={{
+                    bgcolor: "background.default",
+                    color: "text.primary",
                 }}
-                    onClick={() => setOpenDialog(true)}
+            >
+                <Toolbar
+                    sx={{
+                        flexWrap: "wrap",
+                        rowGap: 1,
+                    }}
                 >
-                    <AddIcon />
-                    <Typography>Create</Typography>
-                </Box>
-
-                <Box>
-                    {mode === "dark" ? <IconButton><DarkModeIcon onClick={toggleTheme} /></IconButton> : <IconButton ><LightModeIcon onClick={toggleTheme} /></IconButton>}
-                </Box>
-
-                <Box sx={{}}>
-                    <Box sx={{
-                        height: "40px",
-                        width: "40px",
-                        borderRadius: "50%",
-                        backgroundImage: `url(${userData.avatar || "https://via.placeholder.com/40"})`, backgroundPosition: "center", backgroundSize: "cover", objectFit: "cover",
-                    }}>
-
+                    {/* Search Bar */}
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            display: "flex",
+                            justifyContent: { xs: "flex-start", sm: "center" },
+                            width: { xs: "100%", sm: "auto" },
+                            order: { xs: 1, sm: 0 },
+                            mt: { xs: 1, sm: 0 },
+                        }}
+                    >
+                        <TextField
+                            placeholder="Search"
+                            value={search}
+                            onChange={handleSearchChange}
+                            sx={{
+                                width: "100%",
+                                maxWidth: {
+                                    xs: "100%",
+                                    sm: 360,
+                                    md: 480,
+                                    lg: 500,
+                                },
+                                "& .MuiOutlinedInput-root": {
+                                    borderRadius: "20px",
+                                },
+                            }}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton>
+                                            <SearchIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
                     </Box>
-                </Box>
-            </Box>
-            <VideoUploadModal open={openDialog} onClose={() => setOpenDialog(false)} />
-        </>
-    )
-}
 
-export default Header
+
+                    {/* Actions */}
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            width: { xs: "100%", sm: "auto" },
+                            justifyContent: { xs: "flex-end", sm: "flex-start" },
+                            order: { xs: 2, sm: 0 },
+                        }}
+                    >
+                        {/* Theme Toggle */}
+                        <Tooltip title="Theme">
+                            <IconButton onClick={toggleTheme}>
+                                {mode === "dark" ? <DarkModeIcon /> : <LightModeIcon />}
+                            </IconButton>
+                        </Tooltip>
+
+                        {/* Create Button */}
+                        <Tooltip title="Create">
+                            <Button
+                                onClick={() => setOpenDialog(true)}
+                                sx={{
+                                    bgcolor: "action.hover",
+                                    color: "text.primary",
+                                    textTransform: "none",
+                                    borderRadius: "18px",
+                                    px: 2,
+                                    py: 0.6,
+                                    "&:hover": { bgcolor: "action.selected" },
+                                }}
+                                startIcon={<AddIcon />}
+                            >
+                                <Typography variant="body2">Create</Typography>
+                            </Button>
+                        </Tooltip>
+
+                        {/* Avatar */}
+                        <Box
+                            sx={{
+                                height: 32,
+                                width: 32,
+                                borderRadius: "50%",
+                                backgroundImage: `url(${userData?.avatar || "https://via.placeholder.com/32"})`,
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                                cursor: "pointer",
+                            }}
+                        />
+                    </Box>
+                </Toolbar>
+            </AppBar>
+
+            {/* Spacer */}
+            <Toolbar />
+
+            <VideoUploadModal
+                open={openDialog}
+                onClose={() => setOpenDialog(false)}
+            />
+        </>
+    );
+};
+
+export default Header;

@@ -74,9 +74,7 @@ const VideoUploadModal = ({ open, onClose }) => {
 
             if (videoFile) submissionData.append("uservideoFile", videoFile);
             if (thumbnail) submissionData.append("thumbnail", thumbnail);
-            for (let pair of submissionData.entries()) {
-                console.log(pair[0], pair[1]); // Should log all key-value pairs
-            }
+
             try {
                 let response = Videoservice.UploadVideo(submissionData)
             } catch (error) {

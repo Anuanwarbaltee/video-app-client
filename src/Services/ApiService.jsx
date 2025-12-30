@@ -35,22 +35,23 @@ const ExecutePost = async (url, data) => {
 };
 
 
-const ExecutePatch = async (url, data) => {
+const ExecutePatch = async (url, data, isFormData = false) => {
     const token = JSON.parse(localStorage.getItem("Apikey"))
     try {
         let path = baseUrl + url;
-
-        let headers = {
-            "Content-Type": "application/json",
-        };
+        let headers = {};
+        if (!isFormData) {
+            headers["Content-Type"] = "application/json";
+        }
 
         if (token) {
             headers["Authorization"] = `Bearer ${token}`;
         }
+
         const response = await fetch(path, {
             method: "PATCH",
-            headers: headers,
-            body: JSON.stringify(data),
+            headers,
+            body: isFormData ? data : JSON.stringify(data),
         });
 
         if (!response.ok) {
@@ -114,7 +115,6 @@ const ExecutePostForm = async (url, data, FormData = false) => {
             options.headers["Content-Type"] = "application/json";
         }
 
-        console.log("Response type:", typeof response); // Should log "object"
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
