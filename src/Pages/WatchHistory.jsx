@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Box, Grid, Typography, styled } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-import UseLocalStorage from "../Component/Hooks/UseLocalStorage";
+import useLocalStorage from "../Component/Hooks/UseLocalStorage";
 import { UserService } from "../Services/UserSercive";
 import { Skeleton } from "@mui/material";
 
@@ -39,7 +39,7 @@ const VideoSkeleton = () => (
 );
 
 const WatchHistory = () => {
-    const [user] = UseLocalStorage("User", "");
+    const [user] = useLocalStorage("User", "");
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();

@@ -8,6 +8,7 @@ import useDebounce from "../Component/Hooks/Usedebounce";
 import { Videoservice } from "../Services/Videoservice";
 import { Helpers } from "../Shell/Helpers";
 import { addFilter } from "../redux/searchSlice";
+import { Padding } from "@mui/icons-material";
 
 const Root = styled(Grid)(({ theme }) => ({
     width: "100%",
@@ -17,6 +18,21 @@ const Root = styled(Grid)(({ theme }) => ({
         flexDirection: "column",
         gap: 10,
         cursor: "pointer",
+        padding: "10px",
+        position: "relative",
+        "&::before": {
+            content: '""',
+            position: "absolute",
+            inset: 0,
+            borderRadius: 10,
+            boxShadow: "-7px 9px 56px -21px rgba(0, 0, 0, 0.75)",
+            opacity: 0,
+            transition: "opacity 0.2s ease",
+
+        },
+        "&:hover::before": {
+            opacity: 1,
+        },
     },
 
     ".thumbnail": {
@@ -188,7 +204,7 @@ const Home = () => {
         <Root container>
             <Header handleSearch={setSearch} />
 
-            <Box mt={{ xs: "130px", md: "70px" }}>
+            <Box mt={{ xs: "60px", md: "15px" }} mb={{ xs: "20px", md: "15px" }}>
                 <Grid container spacing={3}>
                     {listData.length === 0 && !loading ? (
                         <Grid item xs={12}>
@@ -211,8 +227,8 @@ const Home = () => {
                                                 sx={{ backgroundImage: `url(${item.ownerDetails?.avatar})` }}
                                             />
                                             <Box className="content">
-                                                <Typography className="title">
-                                                    {item.description || "No description available"}
+                                                <Typography className="title" title={item.title || "No title available"}>
+                                                    {item.title || "No title available"}
                                                 </Typography>
                                                 <Typography className="meta">
                                                     {item.ownerDetails?.userName || "Anonymous"}

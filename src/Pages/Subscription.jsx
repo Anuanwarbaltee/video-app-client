@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import UseLocalStorage from '../Component/Hooks/UseLocalStorage'
+import useLocalStorage from '../Component/Hooks/UseLocalStorage'
 import { Box, Grid, Skeleton, Typography, styled } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import SubscriptionService from '../Services/SubscriptionService'
@@ -45,7 +45,7 @@ const Skeletons = () => (
 )
 
 const Subscription = () => {
-    const [user, setUser] = UseLocalStorage('User', '')
+    const [user, setUser] = useLocalStorage('User', '')
     const [history, setHistory] = useState([])
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();

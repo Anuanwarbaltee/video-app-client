@@ -13,7 +13,7 @@ import {
     Stack,
 } from "@mui/material";
 import { Videoservice } from "../Services/Videoservice";
-import UseLocalStorage from "../Component/Hooks/UseLocalStorage";
+import useLocalStorage from "../Component/Hooks/UseLocalStorage";
 import { useNavigate } from "react-router-dom";
 
 const LIMIT = 8;
@@ -25,7 +25,7 @@ const ChannelVideos = ({ channelId }) => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
-    const [user] = UseLocalStorage("User", "");
+    const [user] = useLocalStorage("User", "");
     const navigate = useNavigate();
 
     const fetchVideos = useCallback(async () => {

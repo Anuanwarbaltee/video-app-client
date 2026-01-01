@@ -3,7 +3,7 @@ import { Box, Button, colors, TextField, Typography, useTheme } from '@mui/mater
 import Grid from '@mui/material/Grid2';
 import React, { useContext, useEffect, useState } from 'react'
 import { UserService } from '../Services/UserSercive';
-import UseLocalStorage from '../Component/Hooks/UseLocalStorage';
+import useLocalStorage from '../Component/Hooks/UseLocalStorage';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../Component/Common/Loader';
 import { ThemeContext } from '../Shell/Theme';
@@ -12,8 +12,8 @@ const Login = () => {
     const [formFields, setformsFields] = useState({})
     const [isSubmit, setIsSubmit] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [apikey, setApiKey] = UseLocalStorage("Apikey", "")
-    const [user, setUser] = UseLocalStorage("User", "")
+    const [apikey, setApiKey] = useLocalStorage("Apikey", "")
+    const [user, setUser] = useLocalStorage("User", "")
     const theme = useTheme();
     const { mode, toggleTheme } = useContext(ThemeContext);
     const navigate = useNavigate();
@@ -51,9 +51,9 @@ const Login = () => {
     }
     return (
         <Box sx={{ bgcolor: theme.palette.background.paper, height: "100vh", width: "100vw" }}>
-            <Box sx={{ color: theme.palette.text.primary, borderRadius: "10px", padding: "10px", textAlign: "end" }}>
+            {/* <Box sx={{ color: theme.palette.text.primary, borderRadius: "10px", padding: "10px", textAlign: "end" }}>
                 <Button onClick={toggleTheme}>{mode === "dark" ? "Light" : "Dark"}</Button>
-            </Box>
+            </Box> */}
             <Grid container spacing={2} sx={{ position: "absolute", top: "30%", left: "50%", translate: "-50%" }}>
                 <Grid size={12}>
                     <Typography>User Name / Email</Typography>

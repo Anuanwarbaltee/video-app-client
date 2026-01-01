@@ -13,7 +13,7 @@ function Loader(props) {
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
-                minHeight: "94.7vh",
+                minHeight: "100vh",
                 minWidth: "100vw",
                 bgcolor: loaderBgColor,
                 zIndex: "111",

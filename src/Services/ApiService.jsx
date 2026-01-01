@@ -37,33 +37,40 @@ const ExecutePost = async (url, data) => {
 
 const ExecutePatch = async (url, data, isFormData = false) => {
     const token = JSON.parse(localStorage.getItem("Apikey"))
-    try {
-        let path = baseUrl + url;
-        let headers = {};
-        if (!isFormData) {
-            headers["Content-Type"] = "application/json";
-        }
-
-        if (token) {
-            headers["Authorization"] = `Bearer ${token}`;
-        }
-
-        const response = await fetch(path, {
-            method: "PATCH",
-            headers,
-            body: isFormData ? data : JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        return result;
-    } catch (error) {
-        console.error("Fetch error:", error);
-        throw error;
+    // try {
+    let path = baseUrl + url;
+    let headers = {};
+    if (!isFormData) {
+        headers["Content-Type"] = "application/json";
     }
+
+    if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(path, {
+        method: "PATCH",
+        headers,
+        body: isFormData ? data : JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        return {
+            success: false,
+            statusCode: response.status,
+            message: result?.message || "Something went wrong",
+            errors: result?.errors || [],
+        };
+    }
+
+
+    return result;
+    // } catch (error) {
+    //     console.error("Fetch error:", error);
+    //     throw error;
+    // }
 };
 
 const ExecuteDelete = async (url, data) => {

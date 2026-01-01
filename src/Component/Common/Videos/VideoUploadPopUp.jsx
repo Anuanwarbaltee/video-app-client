@@ -63,7 +63,7 @@ const VideoUploadModal = ({ open, onClose }) => {
         setThumbnail(event.target.files[0]);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         setLoading(true)
         setIsSubmit(true)
         if (title && videoFile) {
@@ -76,11 +76,15 @@ const VideoUploadModal = ({ open, onClose }) => {
             if (thumbnail) submissionData.append("thumbnail", thumbnail);
 
             try {
-                let response = Videoservice.UploadVideo(submissionData)
+                let response = await Videoservice.UploadVideo(submissionData)
+                if (response.success) {
+                    onClose()
+                }
             } catch (error) {
 
             } finally {
                 setIsSubmit(false)
+                setLoading(false)
             }
         }
 
@@ -194,11 +198,11 @@ const VideoUploadModal = ({ open, onClose }) => {
 
                     {/* Footer Buttons */}
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 1 }}>
-                        <Button variant="outlined" onClick={handleClosePopup}>
+                        <Button variant="outlined" size="small" onClick={handleClosePopup}>
                             Cancel
                         </Button>
-                        <Button variant="contained" color="primary" onClick={handleSubmit}>
-                            Upload Video
+                        <Button variant="contained" size="small" color="primary" onClick={handleSubmit}>
+                            {loading ? "Loading..." : "Upload Video"}
                         </Button>
                     </Box>
                 </ModalContent>

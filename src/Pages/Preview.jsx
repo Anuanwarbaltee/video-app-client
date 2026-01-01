@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Box, Typography, styled, Grid, Avatar, IconButton, TextField } from "@mui/material";
 import { Videoservice } from '../Services/Videoservice';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ReactPlayers from '../Component/Common/ReactPlayer';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import SentimentSatisfiedIcon from "@mui/icons-material/SentimentSatisfied";
@@ -13,7 +13,7 @@ import PreviewLeftSec from '../Component/Common/Videos/PreviewLeftSec';
 import Header from '../Component/Common/Header';
 import BasicMenu from '../Component/Common/Menu';
 import CircularProgress from '@mui/material/CircularProgress';
-import UseLocalStorage from '../Component/Hooks/UseLocalStorage';
+import useLocalStorage from '../Component/Hooks/UseLocalStorage';
 const Root = styled("Grid")(({ theme }) => ({
     width: "100%",
     // padding: "10px 0",
@@ -112,8 +112,8 @@ const Preview = () => {
     const [isSubmitComment, setIsSubmitComment] = useState(false);
     const [search, setSearch] = useState('')
     const { state } = useLocation();
-    const [user] = UseLocalStorage("User", "");
-
+    const [user] = useLocalStorage("User", "");
+    const navigate = useNavigate();
     useEffect(() => {
         if (state.id) {
             getVideo();
@@ -281,6 +281,15 @@ const Preview = () => {
         }
     }
 
+    const gotoVideoPage = (video) => {
+        debugger
+        navigate(`/edit-video/${video._id}`, {
+            state: {
+                video
+            },
+        });
+    };
+
     const toggleLikes = async (type, id) => {
         setIsLiked(!isLiked)
         try {
@@ -396,7 +405,7 @@ const Preview = () => {
                                     </Box>
                                 </Box>
                                 {videoData?.[0]?.isOwner ?
-                                    <Box className="chips" sx={{ backgroundColor: "#0f7ba4 !important" }} onClick={() => toggleSubscription()}>
+                                    <Box className="chips" sx={{ backgroundColor: "#0f7ba4 !important" }} onClick={() => gotoVideoPage(videoData?.[0])}>
                                         <Typography variant='body1' sx={{ color: "#fff" }}>Edit video</Typography>
                                     </Box>
                                     :

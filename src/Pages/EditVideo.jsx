@@ -12,17 +12,17 @@ import {
     Stack,
     Divider,
     LinearProgress,
+    CircularProgress,
 } from "@mui/material";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import UseLocalStorage from "../Component/Hooks/UseLocalStorage";
+import useLocalStorage from "../Component/Hooks/UseLocalStorage";
 import { Videoservice } from "../Services/Videoservice";
+import ApiAlert from "../Component/Common/Alert";
 
 const UpdateVideo = () => {
-    const [user] = UseLocalStorage("User", "");
-    const { videoId } = useParams();
+    const [user] = useLocalStorage("User", "");
     const navigate = useNavigate();
 
-    const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
 
     const [form, setForm] = useState({
@@ -38,6 +38,11 @@ const UpdateVideo = () => {
     const [videoLoading, setVideoLoading] = useState(false);
     const [metaLoading, setMetaLoading] = useState(false);
     const [videoData, setVideoData] = useState({})
+    const [alert, setAlert] = useState({
+        open: false,
+        message: "",
+        severity: "success",
+    });
 
     const { state } = useLocation();
 
@@ -47,7 +52,7 @@ const UpdateVideo = () => {
             setForm({
                 title: videoData.title || "",
                 description: videoData.description || "",
-                isPublished: videoData.isPublished || true,
+                isPublished: videoData.isPublished,
             });
             setThumbnailPreview(videoData.thumbnail);
             setVideoPreview(videoData.uservideoFile);
@@ -57,6 +62,14 @@ const UpdateVideo = () => {
     useEffect(() => {
         getVideo();
     }, [])
+
+    const showAlert = (message, severity = "success") => {
+        setAlert({ open: true, message, severity });
+    };
+
+    const handleClose = () => {
+        setAlert({ ...alert, open: false });
+    };
 
     const getVideo = async () => {
         try {
@@ -83,11 +96,18 @@ const UpdateVideo = () => {
             const fd = new FormData();
             fd.append("thumbnail", file);
             fd.append("videoId", state?.video?._id);
+            const res = await Videoservice.updateThumbnail(fd);
 
-            const { data } = await Videoservice.updateThumbnail(fd);
-            setThumbnailPreview(data.thumbnail);
+            if (res?.success) {
+                setThumbnailPreview(res.data.thumbnail);
+                showAlert(res.message || "Thumbnail updated successfully", "success");
+            } else {
+                showAlert(res.message || "Something went wrong", "error");
+                setThumbLoading(false);
+            }
         } catch (err) {
             console.error(err);
+            showAlert("Something went wrong", "error");
         } finally {
             setThumbLoading(false);
         }
@@ -100,10 +120,17 @@ const UpdateVideo = () => {
             fd.append("uservideoFile", file);
             fd.append("videoId", state?.video?._id);
 
-            const { data } = await Videoservice.updateVideoFile(fd);
+            const res = await Videoservice.updateVideoFile(fd);
+            if (res?.success) {
+                setVideoPreview(res.data.uservideoFile);
+                showAlert(res.message || "Video updated successfully", "success");
+            } else {
+                showAlert(res.message || "Something went wrong", "error");
+                setVideoLoading(false);
+            }
 
-            setVideoPreview(data.uservideoFile);
         } catch (err) {
+            showAlert("Something went wrong", "error");
             console.error(err);
         } finally {
             setVideoLoading(false);
@@ -119,12 +146,24 @@ const UpdateVideo = () => {
 
             if (!form.title?.trim()) return;
             form.videoId = state?.video?._id
-            await Videoservice.updateVideoMeta(form);
-            navigate(-1);
+            let res = await Videoservice.updateVideoMeta(form);
+            if (res?.success) {
+                setForm({
+                    title: res.data.title || "",
+                    description: res.data.description || "",
+                    isPublished: res.data.isPublished,
+                });
+                showAlert(res.message || "Update successfully", "success");
+            } else {
+                showAlert(res.message || "Something went wrong", "error");
+            }
+            // navigate(-1);
         } catch (err) {
             console.error(err);
+            showAlert("Something went wrong", "error");
         } finally {
             setMetaLoading(false);
+            setIsSubmit(false);
         }
     };
 
@@ -327,19 +366,36 @@ const UpdateVideo = () => {
                         />
 
                         {/* ACTIONS */}
+
                         <Stack direction="row" justifyContent="flex-end" spacing={2}>
-                            <Button onClick={() => navigate(-1)}>Cancel</Button>
+                            <Button
+                                onClick={() => navigate(-1)}
+                                disabled={metaLoading}
+                            >
+                                Cancel
+                            </Button>
+
                             <Button
                                 variant="contained"
-                                disabled={metaLoading}
                                 onClick={handleSubmit}
+                                disabled={metaLoading}
+                                startIcon={
+                                    metaLoading ? <CircularProgress size={18} color="inherit" /> : null
+                                }
                             >
-                                Save Changes
+                                {metaLoading ? "Updating" : "Save Changes"}
                             </Button>
                         </Stack>
+
                     </Stack>
                 </CardContent>
             </Card>
+            <ApiAlert
+                open={alert.open}
+                message={alert.message}
+                severity={alert.severity}
+                onClose={handleClose}
+            />
         </Box>
     );
 };

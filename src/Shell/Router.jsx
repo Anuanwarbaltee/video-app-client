@@ -12,12 +12,11 @@ const WatchHistory = lazy(() => import("../Pages/WatchHistory"))
 const LikedVideos = lazy(() => import("../Pages/LikedVideos"))
 const ChannelVideos = lazy(() => import("../Pages/ChanalVideos"))
 const UpdateVideo = lazy(() => import("../Pages/EditVideo"))
+const Settings = lazy(() => import("../Pages/Settings"))
 
 
 const WithLayout = ({ component }) => {
-
     return <DefaultLayout> {component} </DefaultLayout>
-
 }
 
 const Router = () => {
@@ -25,7 +24,7 @@ const Router = () => {
         <BrowserRouter>
             <Suspense fallback={<Loader size={50} message={"Loading..."} />}>
                 <Routes>
-                    <Route path="/" element={<Login />} />
+                    <Route path="/login" element={<Login />} />
                     <Route path="/home" element={<WithLayout component={<Home />} />} />
                     <Route path="/preview/:id" element={<WithLayout component={<Preview />} />} />
                     <Route path="/watch-history" element={<WithLayout component={<WatchHistory />} />} />
@@ -33,6 +32,7 @@ const Router = () => {
                     <Route path="/liked-video" element={<WithLayout component={<LikedVideos />} />} />
                     <Route path="/video/:id" element={<WithLayout component={<ChannelVideos />} />} />
                     <Route path="/edit-video/:id" element={<WithLayout component={<UpdateVideo />} />} />
+                    <Route path="/settings/:id" element={<WithLayout component={<Settings />} />} />
                 </Routes>
             </Suspense>
         </BrowserRouter>
