@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import DefaultLayout from "../DefaultLayout/Layout";
 ;
-import React, { Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 import Loader from "../Component/Common/Loader";
 
 const Login = lazy(() => import("../Access/Login"))
