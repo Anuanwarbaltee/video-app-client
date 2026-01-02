@@ -12,7 +12,11 @@ const Root = styled("Grid")(({ theme }) => ({
         gap: 16,
         paddingBottom: "16px",
         borderBottom: `1px solid ${theme.palette.divider}`,
-
+        alignItems: "flex-start",
+        flexDirection: "column",
+        [theme.breakpoints.up("sm")]: {
+            flexDirection: "row",
+        },
 
         '& .iframe-sec': {
             backgroundPosition: "center",
@@ -60,7 +64,6 @@ const Subscription = () => {
 
             if (res.success) {
                 setHistory(res.data)
-                console.log(history)
             }
         } catch (error) {
 

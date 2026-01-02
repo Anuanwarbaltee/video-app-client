@@ -223,7 +223,13 @@ export default function DefaultLayout({ children }) {
 
 
     return (
-        <Box sx={{ display: "flex" }}>
+        <Box sx={{
+            display: "flex",
+            minHeight: "100vh",
+            width: "100vw",
+            backgroundColor: "background.default",
+            overflowX: "hidden",
+        }}>
             <CssBaseline />
 
             {/* Drawer */}
@@ -234,15 +240,13 @@ export default function DefaultLayout({ children }) {
                     width: drawerWidth,
                     flexShrink: 0,
                     "& .MuiDrawer-paper": {
-                        width: { xs: open ? "95lvw" : drawerWidth, md: drawerWidth, sm: drawerWidth, xl: drawerWidth },
+                        width: {
+                            xs: open ? "95vw" : DRAWER_CLOSE_WIDTH,
+                            sm: drawerWidth,
+                        },
                         boxSizing: "border-box",
                         overflowX: "hidden",
                         backgroundColor: "background.default",
-                        transition: (theme) =>
-                            theme.transitions.create("width", {
-                                easing: theme.transitions.easing.sharp,
-                                duration: theme.transitions.duration.enteringScreen,
-                            }),
                     },
                 }}
             >

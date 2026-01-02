@@ -15,6 +15,11 @@ const Root = styled(Grid)(({ theme }) => ({
         gap: 16,
         padding: "16px 0",
         borderBottom: `1px solid ${theme.palette.divider}`,
+        alignItems: "flex-start",
+        flexDirection: "column",
+        [theme.breakpoints.up("sm")]: {
+            flexDirection: "row",
+        },
     },
 
     ".thumbnail": {

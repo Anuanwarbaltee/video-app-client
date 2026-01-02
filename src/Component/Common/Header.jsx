@@ -67,6 +67,7 @@ const Header = ({ handleSearch }) => {
                             width: { xs: "100%", sm: "auto" },
                             order: { xs: 1, sm: 0 },
                             mt: { xs: 1, sm: 0 },
+                            paddingLeft: { xs: "50px" }
                         }}
                     >
                         <TextField
