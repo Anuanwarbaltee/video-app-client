@@ -24,7 +24,7 @@ const Router = () => {
         <BrowserRouter>
             <Suspense fallback={<Loader size={50} message={"Loading..."} />}>
                 <Routes>
-                    <Route path="/login" element={<Login />} />
+                    <Route path="/" element={<Login />} />
                     <Route path="/home" element={<WithLayout component={<Home />} />} />
                     <Route path="/preview/:id" element={<WithLayout component={<Preview />} />} />
                     <Route path="/watch-history" element={<WithLayout component={<WatchHistory />} />} />

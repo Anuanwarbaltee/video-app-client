@@ -206,7 +206,7 @@ export default function DefaultLayout({ children }) {
             const res = await UserService.LougOutUser()
             localStorage.removeItem("Apikey");
             localStorage.removeItem("User");
-            navigate("/login");
+            navigate("/");
         } catch (error) {
 
         } finally {
