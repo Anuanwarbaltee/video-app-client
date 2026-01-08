@@ -104,7 +104,7 @@ const LikedVideos = () => {
 
             observer.current.observe(node);
         },
-        [loading, fetchLikedVideos]
+        [fetchLikedVideos]
     );
 
     const gotoPreview = (item) => {

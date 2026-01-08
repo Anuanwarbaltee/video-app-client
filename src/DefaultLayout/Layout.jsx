@@ -11,12 +11,7 @@ import {
     IconButton,
     Tooltip,
     Typography,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
-    Button,
+    Avatar
 } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import {
@@ -143,16 +138,10 @@ const UserProfile = ({ open, user, onNavigate }) => {
             }}
             onClick={() => onNavigate(`/settings/${user?._id}`)}
         >
-            <Box
-                sx={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: "50%",
-                    backgroundImage: `url(${user?.avatar || "/avatar.png"})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    flexShrink: 0,
-                }}
+
+            <Avatar
+                src={user?.avatar}
+                sx={{ width: 36, height: 36 }}
             />
 
             {open && (
@@ -226,7 +215,7 @@ export default function DefaultLayout({ children }) {
         <Box sx={{
             display: "flex",
             minHeight: "100vh",
-            width: "100vw",
+            // width: "100vw",
             backgroundColor: "background.default",
             overflowX: "hidden",
         }}>

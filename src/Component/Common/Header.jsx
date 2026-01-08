@@ -9,6 +9,7 @@ import {
     Typography,
     Button,
     Tooltip,
+    Avatar
 } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/Search";
@@ -137,7 +138,7 @@ const Header = ({ handleSearch }) => {
                         </Tooltip>
 
                         {/* Avatar */}
-                        <Box
+                        {/* <Box
                             sx={{
                                 height: 32,
                                 width: 32,
@@ -147,6 +148,11 @@ const Header = ({ handleSearch }) => {
                                 backgroundPosition: "center",
                                 cursor: "pointer",
                             }}
+                        /> */}
+
+                        <Avatar
+                            src={userData?.avatar}
+                            sx={{ width: 35, height: 35 }}
                         />
                     </Box>
                 </Toolbar>

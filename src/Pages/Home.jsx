@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Box, Typography, styled, Grid, Skeleton } from "@mui/material";
+import { Box, Typography, styled, Grid, Skeleton, Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
@@ -8,7 +8,6 @@ import useDebounce from "../Component/Hooks/Usedebounce";
 import { Videoservice } from "../Services/Videoservice";
 import { Helpers } from "../Shell/Helpers";
 import { addFilter } from "../redux/searchSlice";
-import { Padding } from "@mui/icons-material";
 
 const Root = styled(Grid)(({ theme }) => ({
     width: "100%",
@@ -138,11 +137,12 @@ const Home = () => {
                     } else {
                         page.current += 1;
                     }
+
+                    dispatch(addFilter({ search: debouncedSearch }));
                 } else {
                     setListData(reset ? [] : listData);
                 }
 
-                dispatch(addFilter({ search: debouncedSearch }));
             } catch (error) {
                 console.error("Fetch error:", error);
                 setListData(reset ? [] : listData);
@@ -182,7 +182,7 @@ const Home = () => {
 
             observer.current.observe(node);
         },
-        [loading, fetchVideos]
+        [fetchVideos]
     );
 
     const goToPreview = useCallback(
@@ -222,9 +222,13 @@ const Home = () => {
                                             sx={{ backgroundImage: `url(${item.thumbnail})` }}
                                         />
                                         <Box className="card-footer">
-                                            <Box
+                                            {/* <Box
                                                 className="avatar"
                                                 sx={{ backgroundImage: `url(${item.ownerDetails?.avatar})` }}
+                                            /> */}
+                                            <Avatar
+                                                src={item.ownerDetails?.avatar}
+                                                sx={{ width: 44, height: 44 }}
                                             />
                                             <Box className="content">
                                                 <Typography className="title" title={item.title || "No title available"}>
