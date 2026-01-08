@@ -8,73 +8,87 @@ import {
     InputAdornment,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
-import { UserService } from "../Services/UserSercive";
-import useLocalStorage from "../Component/Hooks/UseLocalStorage";
 import Loader from "../Component/Common/Loader";
-import { ThemeContext } from "../Shell/Theme";
 import ApiAlert from "../Component/Common/Alert";
+import { UserService } from "../Services/UserSercive";
 
-const Login = () => {
+const Signup = () => {
     const theme = useTheme();
     const navigate = useNavigate();
-    const { mode } = useContext(ThemeContext);
 
     const [formFields, setFormFields] = useState({
+        fullName: "",
+        email: "",
         userName: "",
         password: "",
     });
 
-    const [isSubmit, setIsSubmit] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [files, setFiles] = useState({
+        avatar: null,
+        coverImage: null,
+    });
+
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [isSubmit, setIsSubmit] = useState(false);
     const [alert, setAlert] = useState({
         open: false,
         message: "",
         severity: "success",
     });
 
-    const [, setApiKey] = useLocalStorage("Apikey", "");
-    const [, setUser] = useLocalStorage("User", "");
-
-    useEffect(() => {
-        localStorage.removeItem("Apikey");
-        localStorage.removeItem("User");
-    }, []);
-
-    const handleChange = useCallback((e) => {
-        const { name, value } = e.target;
-        setFormFields((prev) => ({ ...prev, [name]: value }));
-    }, []);
     const showAlert = (message, severity = "success") => {
         setAlert({ open: true, message, severity });
     };
 
     const handleClose = () => {
-        setAlert({ ...alert, open: false });
+        setAlert((prev) => ({ ...prev, open: false }));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmit(true);
+    const handleChange = useCallback((e) => {
+        const { name, value } = e.target;
+        setFormFields((prev) => ({ ...prev, [name]: value }));
+        setIsSubmit(false);
+    }, []);
 
-        const { userName, password } = formFields;
-        if (!userName || !password) return;
+    const handleFileChange = (e) => {
+        const { name, files } = e.target;
+        setFiles((prev) => ({ ...prev, [name]: files[0] }));
+    };
+
+    const handleSubmit = async () => {
+        setIsSubmit(true);
+        const { fullName, email, userName, password } = formFields;
+
+        if (!fullName || !email || !userName || !password || !files.avatar) {
+            showAlert("All fields including avatar are required.", "error");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("fullName", fullName);
+        formData.append("email", email);
+        formData.append("userName", userName);
+        formData.append("password", password);
+        formData.append("avatar", files.avatar);
+
+        if (files.coverImage) {
+            formData.append("coverImage", files.coverImage);
+        }
 
         setLoading(true);
-
         try {
-            const res = await UserService.logInUser(formFields);
+            const res = await UserService.registerUser(formData);
 
             if (res?.success) {
-                setApiKey(res.data.accessToken);
-                setUser(res.data.user);
-                navigate("/home");
+                showAlert("Account created successfully!", "success");
+                setTimeout(() => navigate("/"), 1200);
             } else {
-                showAlert(res.message || "Something went wrong", "error");
+                showAlert(res.message || "Signup failed", "error");
             }
         } catch (err) {
             showAlert("Something went wrong. Please try again.", "error");
@@ -85,7 +99,7 @@ const Login = () => {
 
     return (
         <>
-            {!loading ? <Box
+            <Box
                 sx={{
                     minHeight: "100vh",
                     minWidth: "100vw",
@@ -97,10 +111,10 @@ const Login = () => {
             >
                 <Box
                     component="form"
-                    onSubmit={handleSubmit}
+
                     sx={{
                         width: "100%",
-                        maxWidth: 420,
+                        maxWidth: 480,
                         p: 4,
                         borderRadius: 2,
                         boxShadow: theme.shadows[4],
@@ -108,23 +122,40 @@ const Login = () => {
                     }}
                 >
                     <Typography variant="h5" textAlign="center" mb={3}>
-                        Login
+                        Sign Up
                     </Typography>
 
                     <Grid container spacing={2}>
                         <Grid size={12}>
                             <TextField
                                 fullWidth
-                                label="User Name / Email"
+                                label="Full Name"
+                                name="fullName"
+                                value={formFields.fullName}
+                                onChange={handleChange}
+                                error={isSubmit && !formFields.fullName}
+                            />
+                        </Grid>
+
+                        <Grid size={12}>
+                            <TextField
+                                fullWidth
+                                label="Email"
+                                name="email"
+                                value={formFields.email}
+                                onChange={handleChange}
+                                error={isSubmit && !formFields.email}
+                            />
+                        </Grid>
+
+                        <Grid size={12}>
+                            <TextField
+                                fullWidth
+                                label="User Name"
                                 name="userName"
                                 value={formFields.userName}
                                 onChange={handleChange}
                                 error={isSubmit && !formFields.userName}
-                                helperText={
-                                    isSubmit && !formFields.userName
-                                        ? "User Name is required"
-                                        : ""
-                                }
                             />
                         </Grid>
 
@@ -137,11 +168,6 @@ const Login = () => {
                                 value={formFields.password}
                                 onChange={handleChange}
                                 error={isSubmit && !formFields.password}
-                                helperText={
-                                    isSubmit && !formFields.password
-                                        ? "Password is required"
-                                        : ""
-                                }
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position="end">
@@ -149,7 +175,6 @@ const Login = () => {
                                                 onClick={() =>
                                                     setShowPassword((p) => !p)
                                                 }
-                                                edge="end"
                                             >
                                                 {showPassword ? (
                                                     <VisibilityOff />
@@ -164,20 +189,47 @@ const Login = () => {
                         </Grid>
 
                         <Grid size={12}>
+                            <Button variant="outlined" component="label" fullWidth>
+                                Upload Avatar (Required)
+                                <input
+                                    type="file"
+                                    hidden
+                                    accept="image/*"
+                                    name="avatar"
+                                    onChange={handleFileChange}
+                                />
+                            </Button>
+                        </Grid>
+
+                        <Grid size={12}>
+                            <Button variant="outlined" component="label" fullWidth>
+                                Upload Cover Image (Optional)
+                                <input
+                                    type="file"
+                                    hidden
+                                    accept="image/*"
+                                    name="coverImage"
+                                    onChange={handleFileChange}
+                                />
+                            </Button>
+                        </Grid>
+
+                        <Grid size={12}>
                             <Button
                                 fullWidth
                                 type="submit"
                                 variant="contained"
                                 size="large"
                                 disabled={loading}
+                                onClick={handleSubmit}
                             >
-                                {loading ? "Logging in..." : "Login"}
+                                {loading ? "Creating Account..." : "Sign Up"}
                             </Button>
                         </Grid>
 
                         <Grid size={12}>
                             <Typography textAlign="center">
-                                Don’t have an account?{" "}
+                                Already have an account?{" "}
                                 <Box
                                     component="span"
                                     sx={{
@@ -185,14 +237,16 @@ const Login = () => {
                                         cursor: "pointer",
                                         fontWeight: 600,
                                     }}
-                                    onClick={() => navigate("/signup")}
+                                    onClick={() => navigate("/login")}
                                 >
-                                    Sign Up
+                                    Login
                                 </Box>
                             </Typography>
                         </Grid>
                     </Grid>
                 </Box>
+
+                {loading && <Loader size={50} message="Creating account..." />}
 
                 <ApiAlert
                     open={alert.open}
@@ -201,10 +255,8 @@ const Login = () => {
                     onClose={handleClose}
                 />
             </Box>
-                :
-                <Loader size={50} message="Authenticating..." />}
         </>
     );
 };
 
-export default Login;
+export default Signup;

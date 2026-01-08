@@ -5,6 +5,7 @@ import { Suspense, lazy } from "react";
 import Loader from "../Component/Common/Loader";
 
 const Login = lazy(() => import("../Access/Login"))
+const Signup = lazy(() => import("../Pages/SignUp"))
 const Home = lazy(() => import("../Pages/Home"))
 const Preview = lazy(() => import("../Pages/Preview"))
 const Subscription = lazy(() => import("../Pages/Subscription"))
@@ -25,6 +26,7 @@ const Router = () => {
             <Suspense fallback={<Loader size={50} message={"Loading..."} />}>
                 <Routes>
                     <Route path="/" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
                     <Route path="/home" element={<WithLayout component={<Home />} />} />
                     <Route path="/preview/:id" element={<WithLayout component={<Preview />} />} />
                     <Route path="/watch-history" element={<WithLayout component={<WatchHistory />} />} />

@@ -2,6 +2,10 @@
 import { ExecuteGet, ExecutePatch, ExecutePost } from "../Services/ApiService"
 
 export const UserService = {
+    async registerUser(data) {
+        let response = await ExecutePost("user/register", data, true)
+        return response;
+    },
     async logInUser(data) {
         let response = await ExecutePost("user/login", data)
         return response;

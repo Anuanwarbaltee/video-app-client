@@ -4,14 +4,15 @@ let baseUrl = AppSetting.baseUrl
 
 const token = JSON.parse(localStorage.getItem("Apikey"))
 
-const ExecutePost = async (url, data) => {
+const ExecutePost = async (url, data, FormData = false) => {
     const token = JSON.parse(localStorage.getItem("Apikey"))
     try {
         let path = baseUrl + url;
 
-        let headers = {
-            "Content-Type": "application/json",
-        };
+        const headers = {};
+        if (!FormData) {
+            headers["Content-Type"] = "application/json";
+        }
 
         if (token) {
             headers["Authorization"] = `Bearer ${token}`;
@@ -19,11 +20,12 @@ const ExecutePost = async (url, data) => {
         const response = await fetch(path, {
             method: "POST",
             headers: headers,
-            body: JSON.stringify(data),
+            body: FormData ? data : JSON.stringify(data),
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+
+        if (response.status >= 500) {
+            throw new Error(result.message || "Server error");
         }
 
         const result = await response.json();

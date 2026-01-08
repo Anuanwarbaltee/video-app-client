@@ -78,21 +78,23 @@ const ChannelVideos = ({ channelId }) => {
                 </Typography>
             </Stack>
 
+
             {/* Search */}
-            <TextField
-                placeholder="Search videos..."
-                value={search}
-                onChange={handleSearch}
-                size="small"
-                sx={{
-                    mb: 3,
-                    width: "100%",
-                    maxWidth: 420,
-                    "& .MuiOutlinedInput-root": {
-                        borderRadius: "20px",
-                    },
-                }}
-            />
+            {videos?.length ?
+                <TextField
+                    placeholder="Search videos..."
+                    value={search}
+                    onChange={handleSearch}
+                    size="small"
+                    sx={{
+                        mb: 3,
+                        width: "100%",
+                        maxWidth: 420,
+                        "& .MuiOutlinedInput-root": {
+                            borderRadius: "20px",
+                        },
+                    }}
+                /> : ""}
 
             {/* Videos Grid */}
             <Grid container spacing={2}>
