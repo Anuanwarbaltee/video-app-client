@@ -237,7 +237,7 @@ const Signup = () => {
                                         cursor: "pointer",
                                         fontWeight: 600,
                                     }}
-                                    onClick={() => navigate("/login")}
+                                    onClick={() => navigate("/")}
                                 >
                                     Login
                                 </Box>
